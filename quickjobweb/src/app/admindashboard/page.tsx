@@ -510,6 +510,126 @@ const AdminDashboard = () => {
                 Add New Publisher
               </button>
             </form>
+
+            {/* Update Publisher Section */}
+            <h3 className="text-lg font-semibold mt-8 mb-4">Update Publisher</h3>
+            <form className="space-y-4">
+              {/* Search Username */}
+              <div>
+                <label className="block text-sm font-medium">Search Username</label>
+                <div className="flex">
+                  <input
+                    type="text"
+                    placeholder="Enter username"
+                    className="border border-gray-300 rounded-l w-full p-2"
+                  />
+                  <button
+                    type="button"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 transition"
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium">Name</label>
+                <input
+                  type="text"
+                  className="border border-gray-300 rounded w-full p-2"
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div>
+                <label className="block text-sm font-medium">Phone Number</label>
+                <input
+                  type="text"
+                  className="border border-gray-300 rounded w-full p-2"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium">Email</label>
+                <input
+                  type="email"
+                  className="border border-gray-300 rounded w-full p-2"
+                />
+              </div>
+
+              {/* Username */}
+              <div>
+                <label className="block text-sm font-medium">Username</label>
+                <input
+                  type="text"
+                  placeholder="Should start with pub@"
+                  className="border border-gray-300 rounded w-full p-2"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium">Password</label>
+                <div className="relative">
+                  <input
+                    type={passwordVisible ? "text" : "password"}
+                    className="border border-gray-300 rounded w-full p-2"
+                    value={password}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                    className="absolute right-2 top-2 text-sm text-gray-500"
+                  >
+                    {passwordVisible ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-sm font-medium">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={confirmPasswordVisible ? "text" : "password"}
+                    className={`border ${
+                      passwordMatch ? "border-gray-300" : "border-red-500"
+                    } rounded w-full p-2`}
+                    value={confirmPassword}
+                    onChange={(e) =>
+                      handleConfirmPasswordChange(e.target.value)
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setConfirmPasswordVisible(!confirmPasswordVisible)
+                    }
+                    className="absolute right-2 top-2 text-sm text-gray-500"
+                  >
+                    {confirmPasswordVisible ? "Hide" : "Show"}
+                  </button>
+                </div>
+                {!passwordMatch && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Passwords do not match.
+                  </p>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+              >
+                Update Publisher
+              </button>
+            </form>
           </div>
         )}
       </div>
