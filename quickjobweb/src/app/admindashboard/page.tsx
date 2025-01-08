@@ -630,6 +630,28 @@ const AdminDashboard = () => {
                 Update Publisher
               </button>
             </form>
+
+            {/* Delete Publisher Section */}
+            <h3 className="text-lg font-semibold mt-8 mb-4">Delete Publisher</h3>
+            <form className="space-y-4">
+              {/* Username */}
+              <div>
+                <label className="block text-sm font-medium">Username</label>
+                <input
+                  type="text"
+                  placeholder="Enter username"
+                  className="border border-gray-300 rounded w-full p-2"
+                />
+              </div>
+
+              {/* Delete Button */}
+              <button
+                type="button"
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+              >
+                Delete Publisher
+              </button>
+            </form>
           </div>
         )}
       </div>
