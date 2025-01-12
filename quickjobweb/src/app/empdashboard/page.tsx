@@ -1,70 +1,84 @@
-'use client'; // This line tells Next.js that the file is a Client Component
+"use client"; // This line tells Next.js that the file is a Client Component
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
-import Link from 'next/link'; // Import Link from next/link
+import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import Link from "next/link"; // Import Link from next/link
 
 export default function Dashboard() {
-  const [location, setLocation] = useState('');
-  const [category, setCategory] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const router = useRouter(); // Initialize useRouter
 
   const locations = [
-    'Galle', 'Colombo', 'Matara', 'Kandy', 'Nuwaraeliya',
-    'Gampaha', 'Hambantota', 'Jaffna',
+    "Galle", "Colombo", "Matara", "Kandy", "Nuwaraeliya",
+    "Gampaha", "Hambantota", "Jaffna",
   ];
 
   const categories = [
-    'Helper', 'Driver', 'Mechanic', 'Carpenter',
-    'Tailor', 'Cook',
+    "Helper", "Driver", "Mechanic", "Carpenter",
+    "Tailor", "Cook",
   ];
 
   // Handle logout action
   const handleLogout = () => {
     // You can perform any logout logic here (like clearing session, etc.)
-    router.push('/'); // Redirect to the homepage
+    router.push("/"); // Redirect to the homepage
   };
 
   // Example job data for the job cards
   const jobCards = [
     {
-      title: 'Mechanic',
-      location: 'Colombo',
-      image: '/mechanic.jpg', // Example image
-      type: 'Full Time',
-      urgency: 'Urgent',
+      title: "Mechanic",
+      location: "Colombo",
+      image: "/mechanic.jpg", // Example image
+      type: "Full Time",
+      urgency: "Urgent",
     },
     {
-      title: 'Carpenter',
-      location: 'Negombo',
-      image: '/carpenter.jpg', // Example image
-      type: 'Part Time',
-      urgency: 'Urgent',
+      title: "Carpenter",
+      location: "Negombo",
+      image: "/carpenter.jpg", // Example image
+      type: "Part Time",
+      urgency: "Urgent",
     },
     {
-      title: 'Plumber',
-      location: 'Kandy',
-      image: '/Plumber.jpg', // Example image
-      type: 'Full Time',
-      urgency: 'Urgent',
+      title: "Plumber",
+      location: "Kandy",
+      image: "/Plumber.jpg", // Example image
+      type: "Full Time",
+      urgency: "Urgent",
     },
     {
-      title: 'Driver',
-      location: 'Galle',
-      image: '/Driver1.jpeg', // Example image
-      type: 'Full Time',
-      urgency: 'Urgent',
+      title: "Driver",
+      location: "Galle",
+      image: "/Driver1.jpeg", // Example image
+      type: "Full Time",
+      urgency: "Urgent",
     },
     {
-      title: 'Home Advisor',
-      location: 'Jaffna',
-      image: '/homeadvisor.jpeg', // Example image
-      type: 'Part Time',
-      urgency: 'Urgent',
+      title: "Home Advisor",
+      location: "Jaffna",
+      image: "/homeadvisor.jpeg", // Example image
+      type: "Part Time",
+      urgency: "Urgent",
+    },
+    {
+      title: "Cleaner",
+      location: "Matara",
+      image: "/Cleaner.jpg", // Example image
+      type: "Part Time",
+      urgency: "Urgent",
     },
   ];
+
+  // Handle Apply Now button click
+  const handleApply = (job: { title: any; location: any; image?: string; type?: string; urgency?: string; }) => {
+    console.log(`Applying for ${job.title} in ${job.location}`);
+    // Add logic for job application here, e.g., API call or redirect
+    alert(`Application submitted for ${job.title} in ${job.location}`);
+  };
 
   return (
     <div className="container">
@@ -145,12 +159,18 @@ export default function Dashboard() {
               <span className="job-type">{job.type}</span>
               <span className="job-urgency">{job.urgency}</span>
             </div>
-            <button className="apply-button">Apply Now</button>
+            <button
+              className="apply-button"
+              onClick={() => handleApply(job)}
+            >
+              Apply Now
+            </button>
           </div>
         ))}
       </div>
 
       {/* Style */}
+
       <style jsx>{`
         .container {
           font-family: Arial, sans-serif;
