@@ -1,213 +1,308 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 
-export default function JobListings() {
-  const [applicationData, setApplicationData] = useState({
-    name: "", // Full Name
-    contact: "", // Phone Number
-    location: "", // Location
-    skill: "", // Skill
-    experience: "", // Experience
-    email: "", // Email Address
-    username: "", // Username
-    password: "", // Password
-    confirmPassword: "", // Confirm Password
+const EmpRegisterPage: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phoneNumber: '',
+    location: '',
+    skill: '',
+    experience: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
-  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [error, setError] = useState<string | null>(null);
+  const [passwordMatched, setPasswordMatched] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
-  // Handles changes in input fields
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
+  // Function to handle form field changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setApplicationData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'password' || name === 'confirmPassword') {
+      setPasswordMatched(formData.password === formData.confirmPassword);
+    }
   };
 
-  // Toggles password visibility
-  const toggleShowPassword = () => {
-    setShowPassword((prev) => !prev);
+  // Function to detect the user's location using the Geolocation API
+  const detectLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          setFormData((prevData) => ({
+            ...prevData,
+            location: `Lat: ${latitude}, Lon: ${longitude}`,
+          }));
+        },
+        (error) => {
+          console.error('Error detecting location', error);
+          setError('Unable to fetch location. Please try again.');
+        }
+      );
+    } else {
+      setError('Geolocation is not supported by your browser.');
+    }
   };
 
-  // Displays account details in an alert
-  const handleViewAccountDetails = () => {
-    alert(`Account Details:
-      Name: ${applicationData.name}
-      Contact: ${applicationData.contact}
-      Location: ${applicationData.location}
-      Skill: ${applicationData.skill}
-      Experience: ${applicationData.experience}
-      Email: ${applicationData.email}
-      Username: ${applicationData.username}
-    `);
+  // UseEffect to auto-detect the location when the component mounts
+  useEffect(() => {
+    detectLocation();
+  }, []);
+
+  // Function to handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (!formData.username.startsWith('emp@')) {
+      setError('Username must start with "emp@"');
+      return;
+    }
+
+    try {
+      console.log('Registering with', formData);
+      router.push('/signin');
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
   };
 
-  // Placeholder for editing account functionality
-  const handleEditAccount = () => {
-    alert("Edit Account functionality coming soon!");
-  };
-
-  // Placeholder for deleting account functionality
-  const handleDeleteAccount = () => {
-    alert("Delete Account functionality coming soon!");
+  // Function to clear the form
+  const handleClear = () => {
+    setFormData({
+      name: '',
+      phoneNumber: '',
+      location: '',
+      skill: '',
+      experience: '',
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
+    setError(null);
+    setPasswordMatched(true);
   };
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center"
+      className="flex flex-col items-center justify-center min-h-screen"
       style={{
-        background: "linear-gradient(135deg, #000000, #003300, #e6d300)",
+        background: 'linear-gradient(135deg, #000000, #003300, #e6d300)',
+        color: '#fff',
       }}
     >
-      {/* Application Form */}
-      <div className="max-w-md w-full p-6 rounded-xl shadow-xl bg-gray-800 border border-gray-600">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-200 text-center">
-          Edit Employee Account
-        </h2>
-
-        {/* Full Name */}
-        <label className="block mb-2 text-gray-300 font-medium">Full Name</label>
-        <input
-          type="text"
-          name="name"
-          placeholder="Your full name"
-          value={applicationData.name}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        />
-
-        {/* Phone Number */}
-        <label className="block mb-2 text-gray-300 font-medium">Phone Number</label>
-        <input
-          type="text"
-          name="contact"
-          placeholder="Your phone number"
-          value={applicationData.contact}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        />
-
-        {/* Location */}
-        <label className="block mb-2 text-gray-300 font-medium">Location</label>
-        <input
-          type="text"
-          name="location"
-          placeholder="Click to get your current location"
-          value={applicationData.location}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        />
-
-        {/* Skill */}
-        <label className="block mb-2 text-gray-300 font-medium">Skill</label>
-        <select
-          name="skill"
-          value={applicationData.skill}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        >
-          <option value="" disabled>Select your job</option>
-          <option value="Mechanic">Mechanic</option>
-          <option value="Carpenter">Carpenter</option>
-          <option value="Plumber">Plumber</option>
-          <option value="Driver">Driver</option>
-          <option value="Home Advisor">Home Advisor</option>
-          <option value="Cleaner">Cleaner</option>
-        </select>
-
-        {/* Experience */}
-        <label className="block mb-2 text-gray-300 font-medium">Experience</label>
-        <select
-          name="experience"
-          value={applicationData.experience}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        >
-          <option value="" disabled>Select your experience</option>
-          <option value="Less than 1 year">Less than 1 year</option>
-          <option value="1 year">1 year</option>
-          <option value="2 years">2 years</option>
-          <option value="3 years">3 years</option>
-          <option value="4 years">4 years</option>
-          <option value="5 or more years">5 or more years</option>
-        </select>
-
-        {/* Email Address */}
-        <label className="block mb-2 text-gray-300 font-medium">Email</label>
-        <input
-          type="text"
-          name="email"
-          placeholder="you@example.com"
-          value={applicationData.email}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        />
-
-        {/* Username */}
-        <label className="block mb-2 text-gray-300 font-medium">Username</label>
-        <input
-          type="text"
-          name="username"
-          placeholder="Starts with emp@"
-          value={applicationData.username}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        />
-
-        {/* Password */}
-        <label className="block mb-2 text-gray-300 font-medium">Password</label>
-        <div className="relative w-full mb-4">
-          <input
-            type={showPassword ? "text" : "password"}
-            name="password"
-            placeholder="Create a strong password"
-            value={applicationData.password}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
+      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-5xl">
+        {/* Left Side - Image */}
+        <div className="w-full md:w-1/3 flex justify-center md:justify-start items-center mb-4 md:mb-0">
+          <Image
+            src="https://i.gifer.com/ZSj2.gif"
+            alt="Registration GIF"
+            width={300}
+            height={300}
+            className="object-cover"
           />
-          <button
-            type="button"
-            onClick={toggleShowPassword}
-            className="absolute inset-y-0 right-0 px-3 text-gray-400 hover:text-gray-200"
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
         </div>
 
-        {/* Confirm Password */}
-        <label className="block mb-2 text-gray-300 font-medium">Confirm Password</label>
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm your password"
-          value={applicationData.confirmPassword}
-          onChange={handleInputChange}
-          className="w-full mb-4 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-gray-200"
-        />
+        {/* Right Side - Form */}
+        <div className="w-full md:w-2/3 bg-black/80 p-8 rounded-lg shadow-lg">
+          <h2 className="text-center text-2xl font-bold mb-4 text-white">Employee Registration</h2>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        {/* View Account Details Button */}
-        <button
-          onClick={handleViewAccountDetails}
-          className="w-full bg-green-700 text-white py-2 rounded-lg hover:bg-green-800 transition duration-200 mb-4"
-        >
-          View Account Details
-        </button>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* Name */}
+            <div>
+              <label className="block text-sm text-gray-300">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Your full name"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {/* Edit Account Button */}
-        <button
-          onClick={handleEditAccount}
-          className="w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition duration-200 mb-4"
-        >
-          Edit Account
-        </button>
+            {/* Phone Number */}
+            <div>
+              <label className="block text-sm text-gray-300">Phone Number</label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                placeholder="Your phone number"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {/* Delete Account Button */}
-        <button
-          onClick={handleDeleteAccount}
-          className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition duration-200"
-        >
-          Delete Account
-        </button>
+            {/* Location */}
+            <div>
+              <label className="block text-sm text-gray-300">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                readOnly
+                onFocus={detectLocation}
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Skill */}
+            <div>
+              <label className="block text-sm text-gray-300">Skill</label>
+              <select
+                name="skill"
+                value={formData.skill}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select skill</option>
+                <option value="Driver">Driver</option>
+                <option value="Cook">Cook</option>
+                <option value="Helper">Helper</option>
+                <option value="Builder">Builder</option>
+                <option value="Motor Mechanic">Motor Mechanic</option>
+                <option value="Carpenter">Carpenter</option>
+                <option value="Electrician">Electrician</option>
+                <option value="Computer Hardware Operator">Computer Hardware Operator</option>
+              </select>
+            </div>
+
+            {/* Experience */}
+            <div>
+              <label className="block text-sm text-gray-300">Experience</label>
+              <select
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select experience</option>
+                <option value="less than 1">Less than 1 year</option>
+                <option value="1 Year">1 Year</option>
+                <option value="2 Years">2 Years</option>
+                <option value="3 Years">3 Years</option>
+                <option value="4 Years">4 Years</option>
+                <option value="5 or more">5 or more years</option>
+              </select>
+            </div>
+
+            {/* Username */}
+            <div>
+              <label className="block text-sm text-gray-300">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Starts with emp@"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm text-gray-300">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm text-gray-300">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a strong password"
+                  className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-3 text-gray-600"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-sm text-gray-300">Confirm Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm your password"
+                  className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-3 text-gray-600"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                >
+                  {showConfirmPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit and Clear Buttons */}
+            <div className="flex justify-between items-center">
+              <button
+                type="submit"
+                className="w-1/2 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg"
+              >
+                Register
+              </button>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="w-1/2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg"
+              >
+                Clear
+              </button>
+            </div>
+          </form>
+
+          <p className="mt-4 text-sm text-gray-400 text-center">
+            Already have an account?{' '}
+            <Link href="/signin" className="text-blue-500 hover:underline">
+              Sign In
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default EmpRegisterPage;
