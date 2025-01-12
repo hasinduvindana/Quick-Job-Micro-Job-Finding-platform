@@ -1,267 +1,256 @@
-"use client";
+"use client"; // Next.js Client Component
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // Correct hook for navigation
 
-interface Job {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  image: File | null;
-  location: string;
-  date: string;
-}
+export default function PublicDashboard() {
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [jobs, setJobs] = useState([
+    { id: 1, title: "Mechanic", location: "Colombo", image: "/mechanic.jpg" },
+    { id: 2, title: "Carpenter", location: "Negombo", image: "/carpenter.jpg" },
+    { id: 3, title: "Plumber", location: "Kandy", image: "/Plumber.jpg" },
+    { id: 4, title: "Driver", location: "Galle", image: "/Driver1.jpeg" },
+    { id: 5, title: "Home Advisor", location: "Jaffna", image: "/homeadvisor.jpeg" },
+    { id: 6, title: "Cleaner", location: "Matara", image: "/Cleaner.jpg" },
+  ]);
 
-const JobManagement = () => {
-  const [jobPosts, setJobPosts] = useState<Job[]>([]);
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    category: "",
-    image: null as File | null,
-    location: "",
-  });
-  const [userAccount, setUserAccount] = useState({
-    username: "JohnDoe",
-    email: "john@example.com",
-  });
-  const [isEditing, setIsEditing] = useState<number | null>(null);
+  const router = useRouter(); // Initialize the useRouter hook
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+  const locations = [
+    "Galle", "Colombo", "Matara", "Kandy", "Nuwaraeliya",
+    "Gampaha", "Hambantota", "Jaffna",
+  ];
+
+  const categories = [
+    "Helper", "Driver", "Mechanic", "Carpenter", "Tailor", "Cook",
+  ];
+
+  const handleAccount = () => {
+    router.push("/pub_editaccount"); // Correct path for redirection
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, image: e.target.files ? e.target.files[0] : null });
+  const handleApply = (job: { id?: number; title: any; location: any; image?: string; }) => {
+    alert(`Viewing applicants for ${job.title} in ${job.location}`);
   };
 
-  const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setForm({ ...form, location: `Lat: ${latitude}, Lon: ${longitude}` });
-        },
-        (error) => {
-          alert("Failed to get location: " + error.message);
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by this browser.");
-    }
-  };
-
-  const handleSaveJob = () => {
-    if (isEditing !== null) {
-      setJobPosts((prev) =>
-        prev.map((job) =>
-          job.id === isEditing ? { ...job, ...form, date: new Date().toISOString() } : job
+  const handleEdit = (job: { id: any; title: any; location: any; image?: string; }) => {
+    alert(`Editing job: ${job.title} in ${job.location}`);
+    const updatedTitle = prompt("Enter new title:", job.title);
+    const updatedLocation = prompt("Enter new location:", job.location);
+    if (updatedTitle && updatedLocation) {
+      setJobs((prevJobs) =>
+        prevJobs.map((j) =>
+          j.id === job.id
+            ? { ...j, title: updatedTitle, location: updatedLocation }
+            : j
         )
       );
-      setIsEditing(null);
-    } else {
-      const newJob: Job = {
-        ...form,
-        id: Date.now(),
-        date: new Date().toISOString(),
-      };
-      setJobPosts([...jobPosts, newJob]);
-    }
-
-    setForm({
-      title: "",
-      description: "",
-      category: "",
-      image: null,
-      location: "",
-    });
-  };
-
-  const handleDeleteJob = (id: number) => {
-    setJobPosts(jobPosts.filter((job) => job.id !== id));
-  };
-
-  const handleEditJob = (id: number) => {
-    const jobToEdit = jobPosts.find((job) => job.id === id);
-    if (jobToEdit) {
-      setForm({
-        title: jobToEdit.title,
-        description: jobToEdit.description,
-        category: jobToEdit.category,
-        image: jobToEdit.image,
-        location: jobToEdit.location,
-      });
-      setIsEditing(id);
     }
   };
 
-  const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUserAccount({ ...userAccount, [name]: value });
+  const handleDelete = (job: { id: any; title: any; location: any; image?: string; }) => {
+    const confirmDelete = confirm(`Are you sure you want to delete ${job.title} in ${job.location}?`);
+    if (confirmDelete) {
+      setJobs((prevJobs) => prevJobs.filter((j) => j.id !== job.id));
+    }
+  };
+
+  const handleLogout = () => {
+    alert("You have logged out.");
+  };
+
+  const handleCreateJob = () => {
+    router.push("/createjob"); // Correct path for redirection
   };
 
   return (
     <div className="container">
-      <div className="form-group">
-        <h2 className="centered-red-text">Edit Account</h2>
-        <label>Username</label>
+      {/* Header */}
+      <header className="header">
+        <div className="logo">
+          <img src="/quickjoblogo.png" alt="QuickJob Logo" />
+        </div>
+        <div className="welcome">
+          <h1>Find Your Next Job with QuickJob</h1>
+          <p>Your gateway to thousands of job opportunities</p>
+        </div>
+
+        {/* Buttons for Account, Create Job, and Logout */}
+        <div className="buttons">
+          <button onClick={handleAccount} className="account-button">
+            <img src="/usericon.png" alt="User Icon" className="user-icon" />
+            Account
+          </button>
+          <button onClick={handleCreateJob} className="create-job-button">
+            Create Job Post
+          </button>
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        </div>
+      </header>
+
+      {/* Search and Filters */}
+      <div className="search-section">
         <input
           type="text"
-          name="username"
-          value={userAccount.username}
-          onChange={handleAccountChange}
-        />
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          value={userAccount.email}
-          onChange={handleAccountChange}
-        />
+          placeholder="What do you want to view?"
+          className="search-bar"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)} />
+        <div className="filters">
+          <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="dropdown"
+          >
+            <option value="">Select Location</option>
+            {locations.map((loc, index) => (
+              <option key={index} value={loc}>
+                {loc}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="dropdown"
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat, index) => (
+              <option key={index} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button className="search-button">Search</button>
       </div>
 
-      <div className="form-group">
-        <h2 className="centered-red-text">
-          {isEditing !== null ? "Edit Job Post" : "Create Job Post"}
-        </h2>
-        <label>Job Title</label>
-        <input
-          type="text"
-          name="title"
-          value={form.title}
-          onChange={handleInputChange}
-        />
+      {/* Job Cards */}
+      <div className="job-cards-section">
+        {jobs.map((job, index) => (
+          <div key={index} className="job-card">
+            <img src={job.image} alt={`${job.title} image`} className="job-image" />
+            <h3 style={{ color: "black" }}>{job.title}</h3>
+            <p style={{ color: "black" }}>{job.location}</p>
+            <div className="job-tags">
+              <button className="job-type" style={{ color: "white" }} onClick={() => handleEdit(job)}>Edit</button>
+              <button className="job-urgency" style={{ color: "white" }} onClick={() => handleDelete(job)}>Delete</button>
+            </div>
+            <button className="apply-button" onClick={() => handleApply(job)}>
+              View Applicants
+            </button>
+          </div>
+        ))}
       </div>
 
-      <div className="form-group">
-        <label>Job Description</label>
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleInputChange}
-        ></textarea>
-      </div>
-
-      <div className="form-group">
-        <label>Category</label>
-        <input
-          type="text"
-          name="category"
-          value={form.category}
-          onChange={handleInputChange}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Job Image</label>
-        <input type="file" onChange={handleImageChange} />
-      </div>
-
-      <div className="form-group">
-        <label>Location</label>
-        <input type="text" name="location" value={form.location} readOnly />
-        <button onClick={handleGetLocation}>Get Current Location</button>
-      </div>
-
-      <button className="btn" onClick={handleSaveJob}>
-        {isEditing !== null ? "Update Job" : "Save Job"}
-      </button>
-
-      <h2>Job Posts</h2>
-      {jobPosts.length > 0 ? (
-        <ul>
-          {jobPosts.map((job) => (
-            <li key={job.id} className="job-card">
-              <h3>{job.title}</h3>
-              <p>{job.description}</p>
-              <p>Category: {job.category}</p>
-              <p>Date: {job.date}</p>
-              <p>Location: {job.location}</p>
-              <div className="buttons">
-                <button className="edit-btn" onClick={() => handleEditJob(job.id)}>
-                  Edit
-                </button>
-                <button className="delete-btn" onClick={() => handleDeleteJob(job.id)}>
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No job posts available.</p>
-      )}
-
+      {/* Styles */}
       <style jsx>{`
         .container {
-          width: 80%;
-          margin: 0 auto;
+          font-family: Arial, sans-serif;
+          background-color: #f3f4f6;
           padding: 20px;
-          background-color: #f9f9f9;
+        }
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          background-color: #2c7a7b;
+          color: #fff;
           border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          margin-bottom: 20px;
         }
-        .form-group {
-          margin-bottom: 15px;
+        .logo img {
+          height: 50px;
         }
-        label {
-          font-weight: bold;
-          margin-bottom: 5px;
-          display: block;
-          color: black;
+        .welcome h1 {
+          margin: 0;
         }
-        input,
-        textarea {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 10px;
-          border-radius: 5px;
-          border: 1px solid #ccc;
-          color: black;
-          background-color: white;
+        .welcome p {
+          margin: 5px 0 0;
         }
-        input::placeholder,
-        textarea::placeholder {
-          color: black;
+        .buttons {
+          display: flex;
+          gap: 10px;
         }
-        button {
-          padding: 10px 20px;
-          background-color: #4caf50;
+        .account-button {
+          background-color: transparent;
           color: white;
-          border: none;
+          padding: 10px 20px;
           border-radius: 5px;
-          margin-right: 10px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .user-icon {
+          width: 30px;
+          height: 30px;
+        }
+        .create-job-button, .logout-button {
+          background-color: #e74c3c;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .search-section {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 20px;
+          justify-content: flex-start; /* Align to the left */
+        }
+        .search-bar {
+          flex-grow: 1; /* Make the search bar expand to take remaining space */
+        }
+        .dropdown {
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+        .search-button {
+          background-color: #2c7a7b;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        select, option {
+          color: black; /* Enforces black text */
+        }
+        .job-cards-section {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 20px;
         }
         .job-card {
-          padding: 15px;
-          margin-bottom: 15px;
-          background-color: #fff;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-        }
-        .centered-red-text {
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
           text-align: center;
-          color: red;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .edit-btn {
-          background-color: red;
+        .apply-button {
+          background-color: #2c7a7b;
           color: white;
-          padding: 10px 20px;
-          border: none;
+          padding: 10px;
           border-radius: 5px;
-          margin-right: 10px;
         }
-        .delete-btn {
-          background-color: red;
+        .job-tags span, .job-tags button {
+          margin: 5px;
+          display: inline-block;
+          padding: 5px;
+          background-color: #e74c3c;
           color: white;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
+          border-radius: 4px;
+          cursor: pointer;
         }
       `}</style>
     </div>
   );
-};
-
-export default JobManagement;
+}

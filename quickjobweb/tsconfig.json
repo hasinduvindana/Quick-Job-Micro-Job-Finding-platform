@@ -31,6 +31,6 @@
     "src/app/page.jsx",
     "src/components/NavBar.jsx",
     "src/app/dashboard/page.jsx"
-  ],
+, "src/app/admindashboard/page.jsx"  ],
   "exclude": ["node_modules"]
 }
