@@ -41,20 +41,33 @@ const SignInPage: React.FC = () => {
   };
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/path-to-your-image.jpg')",
-      }}
-    >
-      <div className="w-full max-w-md p-10 bg-white bg-opacity-80 backdrop-blur-md rounded-lg shadow-2xl">
-        <h2 className="text-4xl font-bold text-gray-800 mb-3">Sign In</h2>
+    <div className="flex items-center justify-center min-h-screen relative">
+      {/* Background Gradient Animation */}
+      <div
+        className="absolute inset-0 z-[-1] animate-bg"
+        style={{
+          background: 'linear-gradient(135deg, #000000, #003300, #e6d300)',
+          backgroundSize: '300% 300%',
+        }}
+      ></div>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+      {/* Sign-In Form */}
+      <div className="relative w-full max-w-md p-8 bg-opacity-90 bg-black rounded-2xl shadow-2xl transform transition duration-500 hover:scale-105">
+        {/* Background Glow */}
+        <div className="absolute inset-0 bg-yellow-600 opacity-30 rounded-2xl blur-xl -z-10"></div>
+
+        <h2 className="text-4xl font-bold text-center text-yellow-400 mb-8 tracking-wide">
+          Sign In
+        </h2>
+
+        {error && (
+          <p className="text-red-500 text-center mb-4 font-semibold">{error}</p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-gray-700">
+            <label htmlFor="email" className="block text-sm font-semibold text-yellow-200">
               Email Address
             </label>
             <input
@@ -62,13 +75,15 @@ const SignInPage: React.FC = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-black"
-              placeholder="you@example.com"
+              className="w-full mt-2 p-4 rounded-xl border border-green-700 bg-green-900 text-yellow-100 placeholder-yellow-400 shadow-inner focus:outline-none focus:ring-4 focus:ring-yellow-500 transition-all duration-300 ease-in-out"
+              placeholder="Enter your email"
               required
             />
           </div>
+
+          {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-gray-700">
+            <label htmlFor="password" className="block text-sm font-semibold text-yellow-200">
               Password
             </label>
             <div className="relative">
@@ -77,34 +92,58 @@ const SignInPage: React.FC = () => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-black"
-                placeholder="Your password"
+                className="w-full mt-2 p-4 rounded-xl border border-green-700 bg-green-900 text-yellow-100 placeholder-yellow-400 shadow-inner focus:outline-none focus:ring-4 focus:ring-yellow-500 transition-all duration-300 ease-in-out"
+                placeholder="Enter your password"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-3 right-3 text-gray-600"
+                className="absolute top-3 right-3 text-yellow-300 hover:text-yellow-200 transition"
               >
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
           </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3 mt-4 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
+            className="w-full py-3 font-bold text-yellow-900 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-xl shadow-xl hover:from-yellow-500 hover:to-yellow-400 transform hover:scale-110 transition-transform focus:ring-4 focus:ring-yellow-300 focus:outline-none"
           >
             Sign In
           </button>
         </form>
 
-        <p className="text-center mt-4">
+        {/* Sign Up Link */}
+        <p className="text-center mt-6 text-yellow-300">
           Don&apos;t have an account?{' '}
-          <a href="/chooserole" className="text-blue-600 hover:underline">
+          <a
+            href="/chooserole"
+            className="text-yellow-400 font-semibold hover:underline hover:text-yellow-300 transition-all duration-200"
+          >
             Sign Up
           </a>
         </p>
       </div>
+
+      <style jsx>{`
+        @keyframes backgroundAnimation {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        .animate-bg {
+          animation: backgroundAnimation 10s ease infinite;
+        }
+      `}</style>
     </div>
   );
 };
