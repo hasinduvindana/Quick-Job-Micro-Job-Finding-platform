@@ -1,234 +1,308 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 
-const AdminDashboard = () => {
-  const [currentSection, setCurrentSection] = useState("home");
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordMatch, setPasswordMatch] = useState(true);
+const EmpRegisterPage: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phoneNumber: '',
+    location: '',
+    skill: '',
+    experience: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
-    setPasswordMatch(value === confirmPassword);
+  const [error, setError] = useState<string | null>(null);
+  const [passwordMatched, setPasswordMatched] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
+
+  // Function to handle form field changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'password' || name === 'confirmPassword') {
+      setPasswordMatched(formData.password === formData.confirmPassword);
+    }
   };
 
-  const handleConfirmPasswordChange = (value: string) => {
-    setConfirmPassword(value);
-    setPasswordMatch(password === value);
+  // Function to detect the user's location using the Geolocation API
+  const detectLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          setFormData((prevData) => ({
+            ...prevData,
+            location: `Lat: ${latitude}, Lon: ${longitude}`,
+          }));
+        },
+        (error) => {
+          console.error('Error detecting location', error);
+          setError('Unable to fetch location. Please try again.');
+        }
+      );
+    } else {
+      setError('Geolocation is not supported by your browser.');
+    }
+  };
+
+  // UseEffect to auto-detect the location when the component mounts
+  useEffect(() => {
+    detectLocation();
+  }, []);
+
+  // Function to handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (!formData.username.startsWith('emp@')) {
+      setError('Username must start with "emp@"');
+      return;
+    }
+
+    try {
+      console.log('Registering with', formData);
+      router.push('/signin');
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
+  };
+
+  // Function to clear the form
+  const handleClear = () => {
+    setFormData({
+      name: '',
+      phoneNumber: '',
+      location: '',
+      skill: '',
+      experience: '',
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
+    setError(null);
+    setPasswordMatched(true);
   };
 
   return (
-    <div>
-      {/* Navigation Bar */}
-      <nav className="bg-gray-800 text-white px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center">
-          <img src="/quickjoblogo.png" alt="Logo" className="h-10 w-10 mr-4" />
-          <span className="font-bold text-lg">Admin Dashboard</span>
+    <div
+      className="flex flex-col items-center justify-center min-h-screen"
+      style={{
+        background: 'linear-gradient(135deg, #000000, #003300, #e6d300)',
+        color: '#fff',
+      }}
+    >
+      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-5xl">
+        {/* Left Side - Image */}
+        <div className="w-full md:w-1/3 flex justify-center md:justify-start items-center mb-4 md:mb-0">
+          <Image
+            src="https://i.gifer.com/ZSj2.gif"
+            alt="Registration GIF"
+            width={300}
+            height={300}
+            className="object-cover"
+          />
         </div>
 
-        {/* Links */}
-        <div className="flex space-x-6">
-          <a
-            href="#"
-            onClick={() => setCurrentSection("home")}
-            className="hover:text-gray-300"
-          >
-            Home
-          </a>
-          <a
-            href="#"
-            onClick={() => setCurrentSection("editEmployee")}
-            className="hover:text-gray-300"
-          >
-            Edit Employee
-          </a>
-          <a
-            href="#"
-            onClick={() => setCurrentSection("updateEmployee")}
-            className="hover:text-gray-300"
-          >
-            Update Employee
-          </a>
-          <a href="#" className="hover:text-gray-300">
-            Clients Count
-          </a>
-          <a href="#" className="hover:text-gray-300">
-            Count of Job Posts
-          </a>
-        </div>
+        {/* Right Side - Form */}
+        <div className="w-full md:w-2/3 bg-black/80 p-8 rounded-lg shadow-lg">
+          <h2 className="text-center text-2xl font-bold mb-4 text-white">Employee Registration</h2>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        {/* Logout Button */}
-        <button className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition">
-          Logout
-        </button>
-      </nav>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* Name */}
+            <div>
+              <label className="block text-sm text-gray-300">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Your full name"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-      {/* Page Content */}
-      <div className="p-6">
-        {currentSection === "home" && (
-          <h1 className="text-2xl font-bold">Welcome to the Admin Dashboard</h1>
-        )}
+            {/* Phone Number */}
+            <div>
+              <label className="block text-sm text-gray-300">Phone Number</label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                placeholder="Your phone number"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {currentSection === "editEmployee" && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Edit Employee</h2>
-            {/* Form for Edit Employee */}
-            {/* Content omitted for brevity */}
-          </div>
-        )}
+            {/* Location */}
+            <div>
+              <label className="block text-sm text-gray-300">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                readOnly
+                onFocus={detectLocation}
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {currentSection === "updateEmployee" && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Update Employee</h2>
-            <form className="space-y-4">
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-medium">Name</label>
+            {/* Skill */}
+            <div>
+              <label className="block text-sm text-gray-300">Skill</label>
+              <select
+                name="skill"
+                value={formData.skill}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select skill</option>
+                <option value="Driver">Driver</option>
+                <option value="Cook">Cook</option>
+                <option value="Helper">Helper</option>
+                <option value="Builder">Builder</option>
+                <option value="Motor Mechanic">Motor Mechanic</option>
+                <option value="Carpenter">Carpenter</option>
+                <option value="Electrician">Electrician</option>
+                <option value="Computer Hardware Operator">Computer Hardware Operator</option>
+              </select>
+            </div>
+
+            {/* Experience */}
+            <div>
+              <label className="block text-sm text-gray-300">Experience</label>
+              <select
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select experience</option>
+                <option value="less than 1">Less than 1 year</option>
+                <option value="1 Year">1 Year</option>
+                <option value="2 Years">2 Years</option>
+                <option value="3 Years">3 Years</option>
+                <option value="4 Years">4 Years</option>
+                <option value="5 or more">5 or more years</option>
+              </select>
+            </div>
+
+            {/* Username */}
+            <div>
+              <label className="block text-sm text-gray-300">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Starts with emp@"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm text-gray-300">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm text-gray-300">Password</label>
+              <div className="relative">
                 <input
-                  type="text"
-                  className="border border-gray-300 rounded w-full p-2"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a strong password"
+                  className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-
-              {/* Phone Number */}
-              <div>
-                <label className="block text-sm font-medium">Phone Number</label>
-                <input
-                  type="text"
-                  className="border border-gray-300 rounded w-full p-2"
-                />
-              </div>
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-medium">Location</label>
-                <input
-                  type="text"
-                  placeholder="Click to get current location"
-                  className="border border-gray-300 rounded w-full p-2"
-                />
-                <button className="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-600 transition">
-                  Get Current Location
+                <button
+                  type="button"
+                  className="absolute right-3 top-3 text-gray-600"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
+            </div>
 
-              {/* Skills */}
-              <div>
-                <label className="block text-sm font-medium">Skills</label>
-                <select
-                  multiple
-                  className="border border-gray-300 rounded w-full p-2"
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-sm text-gray-300">Confirm Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm your password"
+                  className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-3 text-gray-600"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
                 >
-                  <option>Driver</option>
-                  <option>Helper</option>
-                  <option>Builder</option>
-                  <option>Plumber</option>
-                  <option>Cook</option>
-                </select>
+                  {showConfirmPassword ? 'Hide' : 'Show'}
+                </button>
               </div>
+            </div>
 
-              {/* Experience */}
-              <div>
-                <label className="block text-sm font-medium">Experience</label>
-                <select className="border border-gray-300 rounded w-full p-2">
-                  <option>Less than 1 year</option>
-                  <option>1 year</option>
-                  <option>2 years</option>
-                  <option>3 years</option>
-                  <option>4 years</option>
-                  <option>5 or more years</option>
-                </select>
-              </div>
-
-              {/* Username */}
-              <div>
-                <label className="block text-sm font-medium">Username</label>
-                <input
-                  type="text"
-                  placeholder="Should start with emp@"
-                  className="border border-gray-300 rounded w-full p-2"
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium">Email</label>
-                <input
-                  type="email"
-                  className="border border-gray-300 rounded w-full p-2"
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="block text-sm font-medium">Password</label>
-                <div className="relative">
-                  <input
-                    type={passwordVisible ? "text" : "password"}
-                    className="border border-gray-300 rounded w-full p-2"
-                    value={password}
-                    onChange={(e) => handlePasswordChange(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setPasswordVisible(!passwordVisible)}
-                    className="absolute right-2 top-2 text-sm text-gray-500"
-                  >
-                    {passwordVisible ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label className="block text-sm font-medium">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={confirmPasswordVisible ? "text" : "password"}
-                    className={`border ${
-                      passwordMatch ? "border-gray-300" : "border-red-500"
-                    } rounded w-full p-2`}
-                    value={confirmPassword}
-                    onChange={(e) =>
-                      handleConfirmPasswordChange(e.target.value)
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setConfirmPasswordVisible(!confirmPasswordVisible)
-                    }
-                    className="absolute right-2 top-2 text-sm text-gray-500"
-                  >
-                    {confirmPasswordVisible ? "Hide" : "Show"}
-                  </button>
-                </div>
-                {!passwordMatch && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Passwords do not match.
-                  </p>
-                )}
-              </div>
-
-              {/* Update Employee Button */}
+            {/* Submit and Clear Buttons */}
+            <div className="flex justify-between items-center">
               <button
                 type="submit"
-                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
+                className="w-1/2 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg"
               >
-                Update Employee
+                Register
               </button>
-            </form>
-          </div>
-        )}
+              <button
+                type="button"
+                onClick={handleClear}
+                className="w-1/2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg"
+              >
+                Clear
+              </button>
+            </div>
+          </form>
+
+          <p className="mt-4 text-sm text-gray-400 text-center">
+            Already have an account?{' '}
+            <Link href="/signin" className="text-blue-500 hover:underline">
+              Sign In
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default EmpRegisterPage;
