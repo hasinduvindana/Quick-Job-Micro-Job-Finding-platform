@@ -63,3 +63,15 @@ export const addUserLogin = async (loginData: object) => {
     throw error;
   }
 };
+
+// Add Job Post
+export const addJobPost = async (jobData: object) => {
+  try {
+    const docRef = await addDoc(collection(db, 'jobposts'), jobData);
+    return docRef.id; // Return the document ID for reference
+  } catch (error) {
+    console.error('Error adding job post:', error);
+    throw error;
+  }
+};
+
