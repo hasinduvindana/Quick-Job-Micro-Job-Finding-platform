@@ -19,9 +19,11 @@ const EmpRegisterPage: React.FC = () => {
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [passwordMatched, setPasswordMatched] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordMatch, setPasswordMatch] = useState(true);
   const router = useRouter();
 
   // Function to handle form field changes
@@ -30,8 +32,18 @@ const EmpRegisterPage: React.FC = () => {
     setFormData({ ...formData, [name]: value });
 
     if (name === 'password' || name === 'confirmPassword') {
-      setPasswordMatched(formData.password === formData.confirmPassword);
+      setPasswordMatch(formData.password === formData.confirmPassword);
     }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    setPasswordMatch(value === confirmPassword);
+  };
+
+  const handleConfirmPasswordChange = (value: string) => {
+    setConfirmPassword(value);
+    setPasswordMatch(password === value);
   };
 
   // Function to detect the user's location using the Geolocation API
@@ -78,7 +90,8 @@ const EmpRegisterPage: React.FC = () => {
     try {
       console.log('Registering with', formData);
       router.push('/signin');
-    } catch (err) {
+    } catch (error) {
+      console.error(error);
       setError('An error occurred. Please try again.');
     }
   };
@@ -97,7 +110,7 @@ const EmpRegisterPage: React.FC = () => {
       confirmPassword: '',
     });
     setError(null);
-    setPasswordMatched(true);
+    setPasswordMatch(true);
   };
 
   return (
@@ -239,7 +252,7 @@ const EmpRegisterPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
-                  onChange={handleChange}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
                   placeholder="Create a strong password"
                   className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -261,7 +274,7 @@ const EmpRegisterPage: React.FC = () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
-                  onChange={handleChange}
+                  onChange={(e) => handleConfirmPasswordChange(e.target.value)}
                   placeholder="Confirm your password"
                   className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -273,6 +286,9 @@ const EmpRegisterPage: React.FC = () => {
                   {showConfirmPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
+              {!passwordMatch && (
+                <p className="text-red-500 text-sm mt-1">Passwords do not match.</p>
+              )}
             </div>
 
             {/* Submit and Clear Buttons */}

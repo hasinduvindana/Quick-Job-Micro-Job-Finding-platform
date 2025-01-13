@@ -1,20 +1,21 @@
 "use client"; // Next.js Client Component
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Correct hook for navigation
+import Image from "next/image";
+import { useRouter } from "next/router";
 
-export default function PublicDashboard() {
+interface Job {
+  id: number;
+  title: string;
+  location: string;
+  image?: string;
+}
+
+const PubDashboard = () => {
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [jobs, setJobs] = useState([
-    { id: 1, title: "Mechanic", location: "Colombo", image: "/mechanic.jpg" },
-    { id: 2, title: "Carpenter", location: "Negombo", image: "/carpenter.jpg" },
-    { id: 3, title: "Plumber", location: "Kandy", image: "/Plumber.jpg" },
-    { id: 4, title: "Driver", location: "Galle", image: "/Driver1.jpeg" },
-    { id: 5, title: "Home Advisor", location: "Jaffna", image: "/homeadvisor.jpeg" },
-    { id: 6, title: "Cleaner", location: "Matara", image: "/Cleaner.jpg" },
-  ]);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   const router = useRouter(); // Initialize the useRouter hook
 
@@ -31,11 +32,11 @@ export default function PublicDashboard() {
     router.push("/pub_editaccount"); // Correct path for redirection
   };
 
-  const handleApply = (job: { id?: number; title: any; location: any; image?: string; }) => {
+  const handleApply = (job: Job) => {
     alert(`Viewing applicants for ${job.title} in ${job.location}`);
   };
 
-  const handleEdit = (job: { id: any; title: any; location: any; image?: string; }) => {
+  const handleEdit = (job: Job) => {
     alert(`Editing job: ${job.title} in ${job.location}`);
     const updatedTitle = prompt("Enter new title:", job.title);
     const updatedLocation = prompt("Enter new location:", job.location);
@@ -50,7 +51,7 @@ export default function PublicDashboard() {
     }
   };
 
-  const handleDelete = (job: { id: any; title: any; location: any; image?: string; }) => {
+  const handleDelete = (job: Job) => {
     const confirmDelete = confirm(`Are you sure you want to delete ${job.title} in ${job.location}?`);
     if (confirmDelete) {
       setJobs((prevJobs) => prevJobs.filter((j) => j.id !== job.id));
@@ -134,7 +135,11 @@ export default function PublicDashboard() {
       <div className="job-cards-section">
         {jobs.map((job, index) => (
           <div key={index} className="job-card">
-            <img src={job.image} alt={`${job.title} image`} className="job-image" />
+            {job.image ? (
+              <Image src={job.image} alt={job.title} className="job-image" width={500} height={300} />
+            ) : (
+              <Image src="/default-image.jpg" alt="Default Image" className="job-image" width={500} height={300} />
+            )}
             <h3 style={{ color: "black" }}>{job.title}</h3>
             <p style={{ color: "black" }}>{job.location}</p>
             <div className="job-tags">
@@ -253,4 +258,6 @@ export default function PublicDashboard() {
       `}</style>
     </div>
   );
-}
+};
+
+export default PubDashboard;
