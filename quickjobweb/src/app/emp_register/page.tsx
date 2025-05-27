@@ -21,29 +21,19 @@ const EmpRegisterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMatch, setPasswordMatch] = useState(true);
   const router = useRouter();
 
   // Function to handle form field changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    if (name === 'password' || name === 'confirmPassword') {
-      setPasswordMatch(formData.password === formData.confirmPassword);
-    }
-  };
-
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
-    setPasswordMatch(value === confirmPassword);
-  };
-
-  const handleConfirmPasswordChange = (value: string) => {
-    setConfirmPassword(value);
-    setPasswordMatch(password === value);
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      if (name === 'password' || name === 'confirmPassword') {
+        setPasswordMatch(updated.password === updated.confirmPassword);
+      }
+      return updated;
+    });
   };
 
   // Function to detect the user's location using the Geolocation API
@@ -68,12 +58,10 @@ const EmpRegisterPage: React.FC = () => {
     }
   };
 
-  // UseEffect to auto-detect the location when the component mounts
   useEffect(() => {
     detectLocation();
   }, []);
 
-  // Function to handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -96,7 +84,6 @@ const EmpRegisterPage: React.FC = () => {
     }
   };
 
-  // Function to clear the form
   const handleClear = () => {
     setFormData({
       name: '',
@@ -252,7 +239,7 @@ const EmpRegisterPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
-                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  onChange={handleChange}
                   placeholder="Create a strong password"
                   className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -274,7 +261,7 @@ const EmpRegisterPage: React.FC = () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
-                  onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+                  onChange={handleChange}
                   placeholder="Confirm your password"
                   className="w-full px-4 py-2 bg-black/60 text-gray-300 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
