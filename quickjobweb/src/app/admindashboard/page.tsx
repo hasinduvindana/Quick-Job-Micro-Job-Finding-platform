@@ -26,7 +26,7 @@ const AdminDashboard = () => {
       <nav className="bg-gray-800 text-white px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <img src="/quickjoblogo.png" alt="Logo" className="h-10 w-10 mr-4" />
+          <img src="/quickjoblogo.png" alt="Logo" className="h-20 w-20 mr-4" />
           <span className="font-bold text-lg">Admin Dashboard</span>
         </div>
 
@@ -46,13 +46,25 @@ const AdminDashboard = () => {
           >
             Edit Employee
           </a>
-          <a href="#" className="hover:text-gray-300">
+          <a
+            href="#"
+            onClick={() => setCurrentSection("editPublisher")}
+            className="hover:text-gray-300"
+          >
             Edit Publisher
           </a>
-          <a href="#" className="hover:text-gray-300">
+          <a
+            href="#"
+            onClick={() => setCurrentSection("clientsCount")}
+            className="hover:text-gray-300"
+          >
             Clients Count
           </a>
-          <a href="#" className="hover:text-gray-300">
+          <a
+            href="#"
+            onClick={() => setCurrentSection("countOfJobPosts")}
+            className="hover:text-gray-300"
+          >
             Count of Job Posts
           </a>
         </div>
@@ -66,10 +78,10 @@ const AdminDashboard = () => {
       {/* Page Content */}
       <div className="p-6">
         {currentSection === "home" && (
-          <h1 className="text-2xl font-bold">Welcome to the Admin Dashboard</h1>
+          <h1 className="text-2xl font-bold">Welcome to the Admin Dashboard !!!</h1>
         )}
 
-{currentSection === "editEmployee" && (
+        {currentSection === "editEmployee" && (
           <div>
             <h2 className="text-xl font-bold mb-4">Edit Employee</h2>
 
@@ -409,8 +421,8 @@ const AdminDashboard = () => {
             </form>
           </div>
         )}
-              
-              {currentSection === "editPublisher" && (
+
+        {currentSection === "editPublisher" && (
           <div>
             <h2 className="text-xl font-bold mb-4">Edit Publisher</h2>
 
@@ -644,7 +656,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-         {currentSection === "clientsCount" && (
+        {currentSection === "clientsCount" && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Count of Clients : 00</h2>
             <div className="flex justify-between mt-8">
@@ -652,14 +664,14 @@ const AdminDashboard = () => {
               <p className="text-lg font-medium">Count of Publishers : 00</p>
             </div>
           </div>
-        )}   
+        )}
 
         {currentSection === "countOfJobPosts" && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Count of Job Posts</h2>
             <p className="text-lg font-medium">00</p>
           </div>
-        )}     
+        )}
       </div>
     </div>
   );
