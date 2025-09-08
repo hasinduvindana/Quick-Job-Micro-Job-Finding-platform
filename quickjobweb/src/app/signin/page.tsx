@@ -1,151 +1,137 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { checkUserCredentials } from '../../firebase/firestoreService';
+import { useState } from "react";
+import { auth } from "@/lib/firebaseConfig";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { collection, getFirestore, query, where, getDocs } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
+import { motion } from "framer-motion";
+import { FaHome } from "react-icons/fa"; // Home icon
+import Link from "next/link";
 
-const SignInPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+// Firestore instance
+const firestore = getFirestore();
+
+export default function SigninPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [firstName, setFirstName] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
+  const handleSignin = async () => {
+    setLoading(true);
     try {
-      const user = await checkUserCredentials(email, password);
-      if (!user) {
-        setError('Invalid email or password');
-        return;
-      }
+      const googleProvider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, googleProvider);
 
-      const { username } = user;
-      if (username.startsWith('emp')) {
-        router.push('/empdashboard');
-      } else if (username.startsWith('pub')) {
-        router.push('/pubdashboard');
+      if (result.user.emailVerified) {
+        const email = result.user.email;
+
+        // Query userlog
+        const q = query(collection(firestore, "userlog"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data();
+          setFirstName(userData.firstName);
+          setSuccess(true);
+          localStorage.setItem("userFirstName", userData.firstName);
+          localStorage.setItem("email", userData.email);
+
+          setTimeout(() => {
+            sessionStorage.setItem("firstName", userData.firstName);
+            sessionStorage.setItem("email", userData.email);
+            if (userData.accountType === "Employee") {
+              router.push("/employeedashboard");
+            } else if (userData.accountType === "Job Supplier") {
+              router.push("/publisherdashboard");
+            } else if (userData.accountType === "Admin") {
+              router.push("/admindashboard");
+            } else {
+              alert("Unknown account type!");
+            }
+          }, 3000);
+        } else {
+          alert("This email is not registered in our system.");
+        }
       } else {
-        setError('Invalid user type');
+        alert("Please verify your Gmail before signing in.");
       }
     } catch (err) {
       console.error(err);
-      setError('An error occurred. Please try again.');
+      alert("Sign-in failed: " + (err as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen relative">
-      {/* Background Gradient Animation */}
-      <div
-        className="absolute inset-0 z-[-1] animate-bg"
-        style={{
-          background: 'linear-gradient(135deg, #000000, #003300, #e6d300)',
-          backgroundSize: '300% 300%',
-        }}
-      ></div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-black via-purple-900 to-black text-white px-6">
+      <div className="w-full max-w-md bg-black/50 backdrop-blur-lg p-8 rounded-2xl shadow-lg text-center relative">
+        <h2 className="text-2xl font-bold mb-6 text-purple-400">Sign In</h2>
 
-      {/* Sign-In Form */}
-      <div className="relative w-full max-w-md p-8 bg-opacity-90 bg-black rounded-2xl shadow-2xl transform transition duration-500 hover:scale-105">
-        {/* Background Glow */}
-        <div className="absolute inset-0 bg-yellow-600 opacity-30 rounded-2xl blur-xl -z-10"></div>
+        {/* Google Sign-In Button */}
+        <button
+          onClick={handleSignin}
+          disabled={loading}
+          className="flex items-center justify-center gap-3 w-full py-2 rounded-xl bg-white text-black font-medium hover:bg-gray-100 transition disabled:opacity-50"
+        >
+          <FcGoogle size={22} />
+          {loading ? "Signing in..." : "Sign In with Google"}
+        </button>
 
-        <h2 className="text-4xl font-bold text-center text-yellow-400 mb-8 tracking-wide">
-          Sign In
-        </h2>
+        {/* Links Below Button */}
+        <div className="mt-6 flex flex-col items-center gap-3">
+          {/* New user SignUp */}
+          <p className="text-gray-300">
+            Are you a new user?{" "}
+            <Link href="/signup" className="text-purple-400 font-semibold hover:underline">
+              Sign Up
+            </Link>
+          </p>
 
-        {error && (
-          <p className="text-red-500 text-center mb-4 font-semibold">{error}</p>
-        )}
+          {/* Home Link */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium"
+          >
+            <FaHome />
+            Home
+          </Link>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email Input */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-yellow-200">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full mt-2 p-4 rounded-xl border border-green-700 bg-green-900 text-yellow-100 placeholder-yellow-400 shadow-inner focus:outline-none focus:ring-4 focus:ring-yellow-500 transition-all duration-300 ease-in-out"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-
-          {/* Password Input */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-yellow-200">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full mt-2 p-4 rounded-xl border border-green-700 bg-green-900 text-yellow-100 placeholder-yellow-400 shadow-inner focus:outline-none focus:ring-4 focus:ring-yellow-500 transition-all duration-300 ease-in-out"
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-3 right-3 text-yellow-300 hover:text-yellow-200 transition"
+        {/* Success Animation */}
+        {success && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mt-6 flex flex-col items-center"
+          >
+            <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mb-2">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={3}
+                viewBox="0 0 24 24"
               >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
             </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-3 font-bold text-yellow-900 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-xl shadow-xl hover:from-yellow-500 hover:to-yellow-400 transform hover:scale-110 transition-transform focus:ring-4 focus:ring-yellow-300 focus:outline-none"
-          >
-            Sign In
-          </button>
-        </form>
-
-        {/* Sign Up Link */}
-        <p className="text-center mt-6 text-yellow-300">
-          Don&apos;t have an account?{' '}
-          <a
-            href="/chooserole"
-            className="text-yellow-400 font-semibold hover:underline hover:text-yellow-300 transition-all duration-200"
-          >
-            Sign Up
-          </a>
-        </p>
+            <p className="text-green-400 font-semibold text-lg">
+              Login Successful! Welcome {firstName}
+            </p>
+            <motion.div
+              className="w-full h-2 bg-purple-600 rounded mt-2 overflow-hidden"
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 3 }}
+            ></motion.div>
+          </motion.div>
+        )}
       </div>
-
-      <style jsx>{`
-        @keyframes backgroundAnimation {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-
-        .animate-bg {
-          animation: backgroundAnimation 10s ease infinite;
-        }
-      `}</style>
     </div>
   );
-};
-
-export default SignInPage;
+}
