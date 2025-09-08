@@ -1,52 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
-  --background: linear-gradient(135deg, #0a0a0a, #004d00, #f7e600); /* Black, Green, Yellow gradient */
-  --foreground: #202020; /* White text for readability */
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: linear-gradient(135deg, #000000, #003300, #e6d300); /* Darker tones for dark mode */
-    --foreground: #0e0f0e; /* Softer light green for text */
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
 }
 
-/* src/app/globals.css */
 body {
-  /*background: var(--background);*/ /* Apply the gradient theme */
-  background-size: cover; /* Cover the entire viewport */
-  background-position: center; /* Center the gradient */
-  background-repeat: no-repeat; /* Prevent repeating */
-  color: var(--foreground); /* Set text color */
-  background: linear-gradient(135deg, #000000, #003300, #e6d300);
-  color: #ffffff; /* Ensures text is readable on the dark background */
-  font-family: "Poppins", sans-serif;
-}
-
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-.sign-up-button {
-  padding: 10px 20px;
-  background-color: #0070f3;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.sign-up-button:hover {
-  background-color: #0681fc;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
