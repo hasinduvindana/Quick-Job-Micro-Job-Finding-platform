@@ -15,7 +15,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       
 
         {/* Main Content */}
-        <main style={{ marginTop: '80px' }}>
+        <main style={{ marginTop: '30px' }}>
           {children}
         </main>
       </body>
