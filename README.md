@@ -1,25 +1,25 @@
 **QuickJob - Micro Job Finding Platform**
 
 **📌 Overview**
-QuickJob is a web and mobile application designed to connect job suppliers with employees looking for micro jobs such as plumbing, mechanics, carpentry, and more. The platform simplifies the process of finding and offering short-term, skill-based tasks, ensuring efficient and quick job matching. Built using the latest technologies like Next.js, it provides a seamless user experience with real-time interactions and modern UI components.
+QuickJob is a web and mobile application designed to connect job suppliers with employees looking for micro jobs such as plumbing, mechanics, carpentry, and more. The platform simplifies the process of finding and offering short-term, skill-based tasks, ensuring efficient and quick job matching. External users also can find employee for their tasks using this Quick find dunction. Tey can contact or get direction to service Location of employee and rate the experiance also. Built using the latest technologies like Next.js, it provides a seamless user experience with real-time interactions and modern UI components.
 
 **🚀 Features**
 User Registration & Authentication: Secure sign-up and sign-in for job suppliers and employees.
 User Roles:
-Job Suppliers: Post micro jobs with details like job type, description, location, and payment.
+Job Suppliers: Post micro jobs with details like job type, description, location, and payment. View applicants and edit ad.
 Employees: Browse available jobs and apply with a click.
 Job Listings: Filter and search for micro jobs by category, location, and date.
 Application Management: Job suppliers can review applicants and assign jobs.
-Ratings & Reviews: After job completion, job suppliers and employees can leave ratings and reviews to build trust.
+Ratings & Reviews: After job completion, External users can leave ratings and reviews for employee to build trust.
 Responsive Design: Works seamlessly across web and mobile devices.
 
 **🛠️ Tech Stack**
 
 Frontend: Next.js (v14.2.14), React.js, Tailwind CSS
 Backend: Node.js, Express.js
-Database: MongoDB
-Authentication: JWT (JSON Web Tokens)
-Deployment: Vercel (for web app)
+Database: Firebase
+Authentication: Firebase Authentication
+Deployment: Vercel 
 
 **📂 Project Structure**
 
@@ -114,3 +114,25 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For any inquiries or support, please contact:
 
 Hsindu Vindana - hasinduvindana@gmail.com
+
+**Project UI**
+--> Home page UI
+<img width="1897" height="908" alt="Screenshot 2025-09-05 174440" src="https://github.com/user-attachments/assets/2fda962c-9367-4971-8646-c130fb17b2af" />
+--> Signin Page UI
+<img width="1918" height="905" alt="Screenshot 2025-09-05 174516" src="https://github.com/user-attachments/assets/d7c746d8-f3f7-4f1a-a8ec-7566ac7e548e" />
+--> Admin Dashboard UI
+<img width="1897" height="908" alt="Screenshot 2025-09-05 174617" src="https://github.com/user-attachments/assets/3e23a1b8-2c3b-415c-ab9c-08dee4bce5f9" />
+--> Employee Dashboard UI
+<img width="1918" height="905" alt="Screenshot 2025-09-05 174704" src="https://github.com/user-attachments/assets/e219381a-1b38-4769-a2b8-ba7fdc3aaa45" />
+--> Job Post[id] Page UI
+<img width="1897" height="908" alt="Screenshot 2025-09-05 174744" src="https://github.com/user-attachments/assets/703a0e85-a5c2-4cee-8824-7389ff805b23" />
+--> Quick Find UI
+<img width="1897" height="908" alt="Screenshot 2025-09-05 174846" src="https://github.com/user-attachments/assets/419106c4-cfad-437f-8e9f-f8062e61e147" />
+--> Rate Employee UI
+<img width="1897" height="908" alt="Screenshot 2025-09-05 174918" src="https://github.com/user-attachments/assets/64707487-b244-4350-bfff-acbd27970d41" />
+
+
+
+
+
+
