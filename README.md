@@ -119,7 +119,7 @@ Hsindu Vindana - hasinduvindana@gmail.com
 --> Home page UI
 <img width="1897" height="908" alt="Screenshot 2025-09-05 174440" src="https://github.com/user-attachments/assets/2fda962c-9367-4971-8646-c130fb17b2af" />
 --> Signin Page UI
-<img width="1918" height="905" alt="Screenshot 2025-09-05 174516" src="https://github.com/user-attachments/assets/d7c746d8-f3f7-4f1a-a8ec-7566ac7e548e" />
+<img width="1918" height="905" alt="Screenshot 2025-09-05 174516" src="https://github.com/user-attachments/assets/c4d39206-899a-4b39-9ec7-e47d55852d52" />
 --> Admin Dashboard UI
 <img width="1897" height="908" alt="Screenshot 2025-09-05 174617" src="https://github.com/user-attachments/assets/3e23a1b8-2c3b-415c-ab9c-08dee4bce5f9" />
 --> Employee Dashboard UI
